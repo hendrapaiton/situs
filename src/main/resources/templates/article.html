@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${article.title} + ' - Situs CMS'">Article - Situs CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Situs CMS</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/articles">Articles</a>
+                    </li>
+
+                    <!-- Dynamic categories menu -->
+                    <li class="nav-item dropdown" th:each="category : ${categories}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <span th:text="${category.name}">Category</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="page : ${#objects.nullSafe(category.pages, {})}">
+                                <a class="dropdown-item" th:href="@{/page/{slug}(slug=${page.slug})}" th:text="${page.title}">Page Title</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <article>
+                    <h1 th:text="${article.title}">Article Title</h1>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            Published: <span th:text="${#temporals.format(article.publishedAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                            | Views: <span th:text="${article.viewsCount}">0</span>
+                        </small>
+                    </div>
+                    <div class="article-content" th:utext="${article.content}">
+                        <p>Article content goes here...</p>
+                    </div>
+                </article>
+
+                <hr class="my-4">
+
+                <!-- Social sharing buttons -->
+                <div class="social-share">
+                    <h5>Share this article:</h5>
+                    <a class="btn btn-outline-primary btn-sm me-2" th:href="'https://wa.me/?text=' + ${#uris.encode(#httpServletRequest.requestURL + '?ref=whatsapp')}" target="_blank">WhatsApp</a>
+                    <a class="btn btn-outline-primary btn-sm me-2" th:href="'https://www.facebook.com/sharer/sharer.php?u=' + ${#uris.encode(#httpServletRequest.requestURL + '?ref=facebook')}" target="_blank">Facebook</a>
+                    <a class="btn btn-outline-primary btn-sm" th:href="'https://twitter.com/intent/tweet?url=' + ${#uris.encode(#httpServletRequest.requestURL + '?ref=twitter')}" target="_blank">Twitter</a>
+                </div>
+
+                <!-- Related articles section -->
+                <div class="mt-5" th:if="${relatedArticles != null and #lists.size(relatedArticles) > 0}">
+                    <h4>Related Articles</h4>
+                    <div class="list-group">
+                        <a th:each="related : ${relatedArticles}"
+                           th:href="@{/article/{id}(id=${related.id})}"
+                           class="list-group-item list-group-item-action">
+                            <h5 th:text="${related.title}">Related Article Title</h5>
+                            <p class="mb-1" th:text="${#strings.abbreviate(related.content, 100)}">Related content preview...</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Most Viewed Articles Sidebar -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Most Viewed Articles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush" th:if="${mostViewedArticles != null and mostViewedArticles.size() > 0}">
+                            <a th:each="article : ${mostViewedArticles}"
+                               th:href="@{/article/{id}(id=${article.id})}"
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1" th:text="${article.title}">Article Title</h6>
+                                    <small>Views: <span th:text="${article.viewsCount}">0</span></small>
+                                </div>
+                            </a>
+                        </div>
+                        <p th:if="${mostViewedArticles == null or mostViewedArticles.size() == 0}">No articles available.</p>
+                    </div>
+                </div>
+
+                <!-- Categories list -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" th:each="category : ${categories}">
+                                <a th:href="@{'/category/' + ${category.slug}}" th:text="${category.name}">Category Name</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light text-center py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2025 Situs CMS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

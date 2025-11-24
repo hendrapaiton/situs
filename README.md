@@ -23,8 +23,62 @@ The primary goal of this application is to provide a seamless interface for admi
 ## Getting Started
 
 1. Clone the repository.
-2. Configure your PostgreSQL database credentials in `src/main/resources/application.properties`.
-3. Run the application using Maven: `./mvnw spring-boot:run`.
+2. Start the PostgreSQL database using either Docker/Podman commands or helper scripts:
+
+   Using Docker:
+   ```bash
+   docker compose -f container/compose.yml up -d
+   ```
+
+   Using Podman:
+   ```bash
+   podman-compose -f container/compose.yml up -d
+   ```
+
+   Or using helper scripts (these automatically change to the container directory):
+
+   On Linux/macOS:
+   ```bash
+   ./start-db.sh
+   ```
+
+   On Windows:
+   ```cmd
+   start-db.bat
+   ```
+
+   To stop the database:
+
+   Using Docker:
+   ```bash
+   docker compose -f container/compose.yml down
+   ```
+
+   Using Podman:
+   ```bash
+   podman-compose -f container/compose.yml down
+   ```
+
+   Or using helper scripts:
+
+   On Linux/macOS:
+   ```bash
+   ./stop-db.sh
+   ```
+
+   On Windows:
+   ```cmd
+   stop-db.bat
+   ```
+3. Run the application using Maven:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+   Or run with the development profile:
+   ```bash
+   ./mvnw spring-boot:run -Dspring.profiles.active=dev
+   ```
 
 ## License
 
